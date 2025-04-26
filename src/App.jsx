@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useDebounce } from 'react-use';
 import Search from './components/Search';
 import Spinner from './components/Spinner';
 import MovieCard from './components/MovieCard';
 
-const API_BASE_URL = 'https://api.themoviedb.org/3/discover/movie';
+const API_BASE_URL = 'https://api.themoviedb.org/3';
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
@@ -20,11 +21,15 @@ function App() {
   const [moviesList, setMoviesList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [debounceSearchTerm, setDebounceSearchTerm] = useState('');
 
-  const fetchMovies = async () => {
+  useDebounce(() => setDebounceSearchTerm(searchTerm), 500, [searchTerm]);
+  const fetchMovies = async (query = '') => {
     try {
       setIsLoading(true);
-      const endpoint = `${API_BASE_URL}?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
+      const endpoint = query
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+        : `${API_BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
       const response = await fetch(endpoint, API_OPTIONS);
 
       if (!response.ok) {
@@ -48,8 +53,8 @@ function App() {
   };
 
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    fetchMovies(debounceSearchTerm);
+  }, [debounceSearchTerm]);
 
   return (
     <main>
