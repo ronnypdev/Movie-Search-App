@@ -1,6 +1,4 @@
-import React from 'react'
-
-export default function Search({searchTerm, setSearchTerm}) {
+export default function Search({ searchTerm, setSearchTerm }) {
   return (
     <div className="search">
       <div>
@@ -14,5 +12,5 @@ export default function Search({searchTerm, setSearchTerm}) {
         />
       </div>
     </div>
-  )
+  );
 }
